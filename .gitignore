@@ -1,0 +1,10 @@
+# Created by .ignore support plugin (hsz.mobi)
+.g8
+logs
+target
+/.idea
+/.idea_modules
+/.classpath
+/.project
+/.settings
+/RUNNING_PID
