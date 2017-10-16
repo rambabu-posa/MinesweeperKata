@@ -99,9 +99,13 @@ object MineSweeper {
     def isBottom(a:Int)={
       (a-1)>=length-width
     }
+
     val result: Seq[String] =for(x<-1 to length) yield {
-      if (minefieldS(x-1)=='*') "*"
-      else numOfMines(x).toString
+      val cell=
+        if (minefieldS(x-1)=='*') "*"
+        else numOfMines(x).toString
+      if ((x%width)==0) cell +"\n"
+      else cell
     }
     result.mkString
   }
