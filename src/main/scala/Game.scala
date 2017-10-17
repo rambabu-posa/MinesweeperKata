@@ -3,10 +3,10 @@
   */
 object Game extends App {
   val mines = Minefield("*---*\n" +
-                        "-----\n" +
-                        "-----\n" +
-                        "-----\n" +
-                        "*---*\n")
+    "-----\n" +
+    "-----\n" +
+    "-----\n" +
+    "*---*\n")
 
- println(MineSweeper.revealMines(mines))
+  println(MineSweeper.revealMines(mines))
 }
