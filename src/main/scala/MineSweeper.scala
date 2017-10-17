@@ -45,15 +45,8 @@ object MineSweeper {
 
   def revealMines(minefield:String): String ={
 
-    val width=minefield.indexOf("\n")
-    val minefieldS=minefield.replaceAll("\n","")
-
-    val length=minefieldS.length
-
-    def hasMine(f:(Int,Int)=>Int)(implicit i:Int)={
-      if(minefieldS(f(i,width))=='*') 1
-      else 0
-    }
+    val width=minefield.indexOf("\n")+1
+    val length=minefield.length
 
     def cellsToCheck(square:Int): Seq[(Int, Int) => Int] ={
       implicit val x=square
@@ -95,14 +88,20 @@ object MineSweeper {
       currentCell-1>=length-width
     }
 
-    val findMines: Seq[String] =for(cell<-1 to length) yield {
-      implicit val i=cell-1
-      val c=
-        if (minefieldS(cell-1)=='*') "*"
-        else cellsToCheck(cell).map(hasMine(_)).sum.toString
-      if ((cell%width)==0) c +"\n"
-      else c
+    def hasMine(f:(Int,Int)=>Int)(implicit i:Int)={
+
+      if(minefield(f(i,width))=='*') 1
+      else 0
     }
+
+    val findMines: Seq[String] =for(cell<-0 to length-1) yield {
+      implicit val i=cell
+        val currentCell=minefield(cell).toString
+        if (currentCell=="*" || currentCell== "\n") currentCell
+        else cellsToCheck(cell+1).map(hasMine(_)).sum.toString
+
+    }
+
     findMines.mkString
   }
 }
