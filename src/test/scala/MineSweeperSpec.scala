@@ -243,7 +243,7 @@ class MineSweeperSpec extends WordSpecLike with Matchers {
      "221*2*1011\n" +
      "*111211000\n"
     ),
-    ("*------*\n" +
+    ( "*------*\n" +
       "-*------\n" +
       "--------\n" +
       "---*----\n" +
