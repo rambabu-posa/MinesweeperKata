@@ -2,105 +2,51 @@
   * Created by andrew on 14/10/17.
   */
 
+case class Minefield(minefield:String) {
+  val width=minefield.indexOf("\n")+1
+  val length=minefield.length
+}
 
 object MineSweeper {
 
-  val north: (Int, Int) => Int = (i:Int, width:Int)=>i-width
-  val south: (Int, Int) => Int = (i:Int, width:Int)=>i+width
-  val east: (Int, Int) => Int = (i:Int, width:Int)=>i+1
-  val west: (Int, Int) => Int = (i:Int, width:Int)=>i-1
+  def revealMines(minefield:Minefield): String = {
 
-  val northEast: (Int, Int) => Int = (i:Int, width:Int)=>north(i,width)+1
-  val northWest: (Int, Int) => Int = (i:Int, width:Int)=>north(i,width)-1
-  val southEast: (Int, Int) => Int = (i:Int, width:Int)=>south(i,width)+1
-  val southWest: (Int, Int) => Int = (i:Int, width:Int)=>south(i,width)-1
+    val width = minefield.width
+    val length = minefield.length
 
-  val self: (Int, Int) => Int = (i:Int, width:Int)=>i
+    val north: (Int) => Int = (i: Int) => i - width
+    val south: (Int) => Int = (i: Int) => i + width
 
-  val singleCell=Seq(self)
+    val east: (Int) => Int = (i: Int) => i + 1
+    val west: (Int) => Int = (i: Int) => i - 1
 
-  val singleRow=Seq(east,west)
-  val singleRowFirst=Seq(east)
-  val singleRowLast=Seq(west)
+    val northEast: (Int) => Int = (i: Int) => north(i) + 1
+    val northWest: (Int) => Int = (i: Int) => north(i) - 1
+    val southEast: (Int) => Int = (i: Int) => south(i) + 1
+    val southWest: (Int) => Int = (i: Int) => south(i) - 1
 
-  val singleColumn=Seq(north,south)
-  val singleColumnTop=Seq(south)
-  val singleColumnBottom=Seq(north)
+    val surroundingCells = Seq(north, northEast, east, southEast, south, southWest, west, northWest)
 
-  val topLeft=Seq(south,east,southEast)
-  val topRight=Seq(south,west,southWest)
-  val topCentre=Seq(west,southWest,south,southEast,east)
-
-  val bottomLeft=Seq(north,northEast,east)
-  val bottomRight=Seq(north,northWest,west)
-  val bottomCentre=Seq(west,northWest,north,northEast,east)
-
-  val leftColumn=Seq(north,northEast,east,southEast,south)
-  val rightColumn=Seq(north,northWest,west,southWest,south)
-  val centre=Seq(north,northEast,east,southEast,south,southWest,west,northWest)
-
-  def revealMines(minefield:String): String ={
-
-    val width=minefield.indexOf("\n")+1
-    val length=minefield.length
-
-    def isTop(implicit currentCell:Int)={
-      currentCell<=width
-    }
-    def isLeft(implicit currentCell:Int)={
-      (currentCell-1) % width==0
-    }
-    def isRight(implicit currentCell:Int)={
-      currentCell % width==0
-    }
-    def isBottom(implicit currentCell:Int)={
-      currentCell-1>=length-width
-    }
-
-    def cellsToCheck(implicit square:Int): Seq[(Int, Int) => Int] ={
-
-      (isTop,isBottom,isRight,isLeft) match {
-
-        case (true,true,true,true)   => singleCell
-
-        case (true,true,false,false) => singleRow
-        case (true,true,false,true)  => singleRowFirst
-        case (true,true,true,false)  => singleRowLast
-
-        case (false,false,true,true) => singleColumn
-        case (true,false,true,true)  => singleColumnTop
-        case (false,true,true,true)  => singleColumnBottom
-
-        case (true,false,false,true) => topLeft
-        case (true,false,true,false) => topRight
-        case (true,false,false,false)=> topCentre
-        case (false,true,true,false) => bottomRight
-        case (false,true,false,true) => bottomLeft
-        case (false,true,false,false)=> bottomCentre
-        case (false,false,false,true)=> leftColumn
-        case (false,false,true,false)=> rightColumn
-
-        case _=> centre
+    def hasMine(f: (Int) => Int, cell: Int) = {
+      try {
+        if (minefield.minefield(f(cell)) == '*') 1
+        else 0
+      } catch {
+        case e: java.lang.StringIndexOutOfBoundsException => 0
+        case e: Throwable => throw e
       }
     }
 
-    def hasMine(f:(Int,Int)=>Int, i:Int)={
-      if(minefield(f(i,width))=='*') 1
-      else 0
-    }
-
-    val findMines: Seq[String] =for(cell<-0 to length-1) yield {
-        val currentCell=minefield(cell).toString
-        if (currentCell=="*" || currentCell== "\n"){
-          currentCell
-        }
-        else {
-          cellsToCheck(cell+1).map(hasMine(_,cell)).sum.toString
-        }
-
-    }
-
-    findMines.mkString
+    (for (cell <- 0 until length) yield {
+      val currentCellContent: String = minefield.minefield(cell).toString
+      if (currentCellContent == "*" || currentCellContent == "\n") {
+        currentCellContent
+      }
+      else {
+        surroundingCells.map(hasMine(_, cell)).sum
+      }
+    }).mkString
   }
+
 }
 
