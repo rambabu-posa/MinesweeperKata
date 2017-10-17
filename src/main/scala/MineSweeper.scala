@@ -2,7 +2,8 @@
   * Created by andrew on 14/10/17.
   */
 
-object minefieldDefinitions {
+
+object MineSweeper {
 
   val north: (Int, Int) => Int = (i:Int, width:Int)=>i-width
   val south: (Int, Int) => Int = (i:Int, width:Int)=>i+width
@@ -38,18 +39,26 @@ object minefieldDefinitions {
   val rightColumn=Seq(north,northWest,west,southWest,south)
   val centre=Seq(north,northEast,east,southEast,south,southWest,west,northWest)
 
-}
-
-object MineSweeper {
-  import minefieldDefinitions._
-
   def revealMines(minefield:String): String ={
 
     val width=minefield.indexOf("\n")+1
     val length=minefield.length
 
-    def cellsToCheck(square:Int): Seq[(Int, Int) => Int] ={
-      implicit val x=square
+    def isTop(implicit currentCell:Int)={
+      currentCell<=width
+    }
+    def isLeft(implicit currentCell:Int)={
+      (currentCell-1) % width==0
+    }
+    def isRight(implicit currentCell:Int)={
+      currentCell % width==0
+    }
+    def isBottom(implicit currentCell:Int)={
+      currentCell-1>=length-width
+    }
+
+    def cellsToCheck(implicit square:Int): Seq[(Int, Int) => Int] ={
+
       (isTop,isBottom,isRight,isLeft) match {
 
         case (true,true,true,true)   => singleCell
@@ -75,30 +84,19 @@ object MineSweeper {
       }
     }
 
-    def isTop(implicit currentCell:Int)={
-      currentCell<=width
-    }
-    def isLeft(implicit currentCell:Int)={
-      (currentCell-1) % width==0
-    }
-    def isRight(implicit currentCell:Int)={
-      currentCell % width==0
-    }
-    def isBottom(implicit currentCell:Int)={
-      currentCell-1>=length-width
-    }
-
-    def hasMine(f:(Int,Int)=>Int)(implicit i:Int)={
-
+    def hasMine(f:(Int,Int)=>Int, i:Int)={
       if(minefield(f(i,width))=='*') 1
       else 0
     }
 
     val findMines: Seq[String] =for(cell<-0 to length-1) yield {
-      implicit val i=cell
         val currentCell=minefield(cell).toString
-        if (currentCell=="*" || currentCell== "\n") currentCell
-        else cellsToCheck(cell+1).map(hasMine(_)).sum.toString
+        if (currentCell=="*" || currentCell== "\n"){
+          currentCell
+        }
+        else {
+          cellsToCheck(cell+1).map(hasMine(_,cell)).sum.toString
+        }
 
     }
 
