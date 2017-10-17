@@ -1,112 +1,109 @@
 /**
   * Created by andrew on 14/10/17.
   */
+
+object minefieldDefinitions {
+
+  val north: (Int, Int) => Int = (i:Int, width:Int)=>i-width
+  val south: (Int, Int) => Int = (i:Int, width:Int)=>i+width
+  val east: (Int, Int) => Int = (i:Int, width:Int)=>i+1
+  val west: (Int, Int) => Int = (i:Int, width:Int)=>i-1
+
+  val northEast: (Int, Int) => Int = (i:Int, width:Int)=>north(i,width)+1
+  val northWest: (Int, Int) => Int = (i:Int, width:Int)=>north(i,width)-1
+  val southEast: (Int, Int) => Int = (i:Int, width:Int)=>south(i,width)+1
+  val southWest: (Int, Int) => Int = (i:Int, width:Int)=>south(i,width)-1
+
+  val self: (Int, Int) => Int = (i:Int, width:Int)=>i
+
+  val singleCell=Seq(self)
+
+  val singleRow=Seq(east,west)
+  val singleRowFirst=Seq(east)
+  val singleRowLast=Seq(west)
+
+  val singleColumn=Seq(north,south)
+  val singleColumnTop=Seq(south)
+  val singleColumnBottom=Seq(north)
+
+  val topLeft=Seq(south,east,southEast)
+  val topRight=Seq(south,west,southWest)
+  val topCentre=Seq(west,southWest,south,southEast,east)
+
+  val bottomLeft=Seq(north,northEast,east)
+  val bottomRight=Seq(north,northWest,west)
+  val bottomCentre=Seq(west,northWest,north,northEast,east)
+
+  val leftColumn=Seq(north,northEast,east,southEast,south)
+  val rightColumn=Seq(north,northWest,west,southWest,south)
+  val centre=Seq(north,northEast,east,southEast,south,southWest,west,northWest)
+
+}
+
 object MineSweeper {
+  import minefieldDefinitions._
+
   def revealMines(minefield:String): String ={
 
     val width=minefield.indexOf("\n")
     val minefieldS=minefield.replaceAll("\n","")
 
     val length=minefieldS.length
-    val north =(i:Int,width:Int)=>i-width
-    val south =(i:Int,width:Int)=>i+width
-    val east = (i:Int,width:Int)=>i+1
-    val west = (i:Int,width:Int)=>i-1
-
-    val northEast =(i:Int,width:Int)=>north(i,width)+1
-    val northWest =(i:Int,width:Int)=>north(i,width)-1
-    val southEast =(i:Int,width:Int)=>south(i,width)+1
-    val southWest =(i:Int,width:Int)=>south(i,width)-1
 
     def hasMine(f:(Int,Int)=>Int)(implicit i:Int)={
       if(minefieldS(f(i,width))=='*') 1
       else 0
     }
-    def numOfMines(cell:Int): Int ={
+
+    def cellsToCheck(square:Int): Seq[(Int, Int) => Int] ={
+      implicit val x=square
+      (isTop,isBottom,isRight,isLeft) match {
+
+        case (true,true,true,true)   => singleCell
+
+        case (true,true,false,false) => singleRow
+        case (true,true,false,true)  => singleRowFirst
+        case (true,true,true,false)  => singleRowLast
+
+        case (false,false,true,true) => singleColumn
+        case (true,false,true,true)  => singleColumnTop
+        case (false,true,true,true)  => singleColumnBottom
+
+        case (true,false,false,true) => topLeft
+        case (true,false,true,false) => topRight
+        case (true,false,false,false)=> topCentre
+        case (false,true,true,false) => bottomRight
+        case (false,true,false,true) => bottomLeft
+        case (false,true,false,false)=> bottomCentre
+        case (false,false,false,true)=> leftColumn
+        case (false,false,true,false)=> rightColumn
+
+        case _=> centre
+      }
+    }
+
+    def isTop(implicit currentCell:Int)={
+      currentCell<=width
+    }
+    def isLeft(implicit currentCell:Int)={
+      (currentCell-1) % width==0
+    }
+    def isRight(implicit currentCell:Int)={
+      currentCell % width==0
+    }
+    def isBottom(implicit currentCell:Int)={
+      currentCell-1>=length-width
+    }
+
+    val findMines: Seq[String] =for(cell<-1 to length) yield {
       implicit val i=cell-1
-      cellPostion(cell) match {
-
-          //single cell
-        case "SingleCell" =>0
-
-          //single row
-        case "SingleRow" =>hasMine(east)+hasMine(west)
-        case "SingleRowFirst"=>hasMine(east)
-        case "SingleRowLast"=>hasMine(west)
-
-          // single column
-
-        case "SingleColumn" =>    hasMine(north)+hasMine(south)
-        case "SingleColumnTop" => hasMine(south)
-        case "SingleColumnBottom"=>hasMine(north)
-
-          //standard grid
-
-        case "TopLeft" =>
-          hasMine(south) + hasMine(east) + hasMine(southEast) //topLeft
-        case "TopRight"=>
-          hasMine(south) + hasMine(west) + hasMine(southWest)  //topRight
-        case "TopCentre"=>
-          hasMine(south) + hasMine(southEast) + hasMine(southWest)  + hasMine(east) + hasMine(west)  // topCentre
-        case "BottomRight"=>
-          hasMine(north) + hasMine(northWest) +  hasMine(west) //bottomRight
-        case "BottomLeft" =>
-          hasMine(north) + hasMine(northEast) + hasMine(east) //bottomLeft
-        case "BottomCentre"=>
-          hasMine(north) + hasMine(northWest)+ hasMine(northEast) + hasMine(east) + hasMine(west) //bottomCentre
-        case "LeftColumn"=>
-          hasMine(north) + hasMine(south)+hasMine(northEast)+hasMine(southEast)+hasMine(east)
-        case "RightColumn"=>
-          hasMine(north) + hasMine(south) + hasMine(west) + hasMine(northWest) + hasMine(southWest)  //right
-        case _ => hasMine(north) +  hasMine(south) + hasMine(east) + hasMine(west) +
-          hasMine(northEast)+hasMine(northWest) + hasMine(southEast) + hasMine(southWest) //centre
-      }
+      val c=
+        if (minefieldS(cell-1)=='*') "*"
+        else cellsToCheck(cell).map(hasMine(_)).sum.toString
+      if ((cell%width)==0) c +"\n"
+      else c
     }
-
-    def cellPostion(square:Int)={
-      (isTop(square),isBottom(square),isRight(square),isLeft(square)) match {
-
-        case (true,true,false,false) => "SingleRow"
-        case (true,true,false,true)  => "SingleRowFirst"
-        case (true,true,true,false)  => "SingleRowLast"
-
-        case (false,false,true,true) => "SingleColumn"
-        case (true,false,true,true)  => "SingleColumnTop"
-        case (false,true,true,true)  => "SingleColumnBottom"
-
-        case (true,true,true,true)   => "SingleCell"
-        case (true,false,false,true) => "TopLeft"
-        case (true,false,true,false) => "TopRight"
-        case (true,false,false,false)=> "TopCentre"
-        case (false,true,true,false) => "BottomRight"
-        case (false,true,false,true) => "BottomLeft"
-        case (false,true,false,false)=> "BottomCentre"
-        case (false,false,false,true)=> "LeftColumn"
-        case (false,false,true,false)=> "RightColumn"
-        case _=> "Centre"
-      }
-    }
-
-    def isTop(a:Int)={
-      a<=width
-    }
-    def isLeft(a:Int)={
-      (a-1) % width==0
-    }
-    def isRight(a:Int)={
-      a % width==0
-    }
-    def isBottom(a:Int)={
-      (a-1)>=length-width
-    }
-
-    val result: Seq[String] =for(x<-1 to length) yield {
-      val cell=
-        if (minefieldS(x-1)=='*') "*"
-        else numOfMines(x).toString
-      if ((x%width)==0) cell +"\n"
-      else cell
-    }
-    result.mkString
+    findMines.mkString
   }
 }
+
