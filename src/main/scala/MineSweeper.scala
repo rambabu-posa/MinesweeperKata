@@ -2,6 +2,10 @@
   * Created by andrew on 14/10/17.
   */
 
+case class Minefield(minefield:String) {
+  val width=minefield.indexOf("\n")+1
+  val length=minefield.length
+}
 
 object MineSweeper {
 
@@ -39,23 +43,10 @@ object MineSweeper {
   val rightColumn=Seq(north,northWest,west,southWest,south)
   val centre=Seq(north,northEast,east,southEast,south,southWest,west,northWest)
 
-  def revealMines(minefield:String): String ={
+  def revealMines(minefield:Minefield): String ={
 
-    val width=minefield.indexOf("\n")+1
+    val width=minefield.width
     val length=minefield.length
-
-    def isTop(implicit currentCell:Int)={
-      currentCell<=width
-    }
-    def isLeft(implicit currentCell:Int)={
-      (currentCell-1) % width==0
-    }
-    def isRight(implicit currentCell:Int)={
-      currentCell % width==0
-    }
-    def isBottom(implicit currentCell:Int)={
-      currentCell-1>=length-width
-    }
 
     def cellsToCheck(implicit square:Int): Seq[(Int, Int) => Int] ={
 
@@ -84,13 +75,29 @@ object MineSweeper {
       }
     }
 
+    def isTop(implicit currentCell:Int)={
+      currentCell<=width
+    }
+
+    def isLeft(implicit currentCell:Int)={
+      (currentCell-1) % width==0
+    }
+
+    def isRight(implicit currentCell:Int)={
+      currentCell % width==0
+    }
+
+    def isBottom(implicit currentCell:Int)={
+      currentCell-1>=length-width
+    }
+
     def hasMine(f:(Int,Int)=>Int, i:Int)={
-      if(minefield(f(i,width))=='*') 1
+      if(minefield.minefield(f(i,width))=='*') 1
       else 0
     }
 
     val findMines: Seq[String] =for(cell<-0 to length-1) yield {
-        val currentCell=minefield(cell).toString
+        val currentCell=minefield.minefield(cell).toString
         if (currentCell=="*" || currentCell== "\n"){
           currentCell
         }
@@ -99,7 +106,6 @@ object MineSweeper {
         }
 
     }
-
     findMines.mkString
   }
 }
