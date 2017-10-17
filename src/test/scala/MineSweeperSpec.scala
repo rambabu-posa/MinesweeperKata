@@ -242,7 +242,25 @@ class MineSweeperSpec extends WordSpecLike with Matchers {
      "*11121101*\n" +
      "221*2*1011\n" +
      "*111211000\n"
-    )
+    ),
+    ("*------*\n" +
+      "-*------\n" +
+      "--------\n" +
+      "---*----\n" +
+      "*--*----\n" +
+      "------*-\n" +
+      "--------\n" +
+      "*------*\n",
+
+      "*210001*\n" +
+      "2*100011\n" +
+      "11211000\n" +
+      "112*2000\n" +
+      "*12*2111\n" +
+      "111111*1\n" +
+      "11000122\n" +
+      "*100001*\n"
+  )
   )
   "Calling Minesweeper" should {
     forAll(singleCell) { (minefield: String, revealledMineField) =>

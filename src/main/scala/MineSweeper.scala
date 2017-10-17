@@ -27,9 +27,9 @@ object MineSweeper {
 
     val surroundingCells = Seq(north, northEast, east, southEast, south, southWest, west, northWest)
 
-    def hasMine(f: (Int) => Int, i: Int) = {
+    def hasMine(f: (Int) => Int, cell: Int) = {
       try {
-        if (minefield.minefield(f(i)) == '*') 1
+        if (minefield.minefield(f(cell)) == '*') 1
         else 0
       } catch {
         case e: java.lang.StringIndexOutOfBoundsException => 0
