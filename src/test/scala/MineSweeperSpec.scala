@@ -4,7 +4,7 @@ import org.scalatest.prop.TableDrivenPropertyChecks._
 import scala.io.Source
 
 class MineSweeperSpec extends WordSpecLike with Matchers {
-  import scala.io.Source._
+
   val singleCell=Table(
     ("Minefield","RevealledMinefield"),
     ("-\n",           "0\n"),
@@ -278,13 +278,5 @@ class MineSweeperSpec extends WordSpecLike with Matchers {
           result shouldBe revealledMineField
        }
     }
-
-//    "read file " in {
-//      import scala.io.Source._
-//      val filename=Source.fromFile(filename).getLines
-//        "/home/andrew/Applications/hmrc-development-environment/hmrc/minesweeper/test/testData/a.txt"
-//      val testInput=
-//        true shouldBe true
-//    }
   }
 }
