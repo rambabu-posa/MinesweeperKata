@@ -9,43 +9,44 @@ case class Minefield(minefield:String) {
 
 object MineSweeper {
 
-  val north: (Int, Int) => Int = (i:Int, width:Int)=>i-width
-  val south: (Int, Int) => Int = (i:Int, width:Int)=>i+width
-  val east: (Int, Int) => Int = (i:Int, width:Int)=>i+1
-  val west: (Int, Int) => Int = (i:Int, width:Int)=>i-1
+  def revealMines(minefield:Minefield): String = {
 
-  val northEast: (Int, Int) => Int = (i:Int, width:Int)=>north(i,width)+1
-  val northWest: (Int, Int) => Int = (i:Int, width:Int)=>north(i,width)-1
-  val southEast: (Int, Int) => Int = (i:Int, width:Int)=>south(i,width)+1
-  val southWest: (Int, Int) => Int = (i:Int, width:Int)=>south(i,width)-1
+    val width = minefield.width
+    val length = minefield.length
 
-  val centre=Seq(north,northEast,east,southEast,south,southWest,west,northWest)
+    val north: (Int) => Int = (i: Int) => i - width
+    val south: (Int) => Int = (i: Int) => i + width
 
-  def revealMines(minefield:Minefield): String ={
+    val east: (Int) => Int = (i: Int) => i + 1
+    val west: (Int) => Int = (i: Int) => i - 1
 
-    val width=minefield.width
-    val length=minefield.length
+    val northEast: (Int) => Int = (i: Int) => north(i) + 1
+    val northWest: (Int) => Int = (i: Int) => north(i) - 1
+    val southEast: (Int) => Int = (i: Int) => south(i) + 1
+    val southWest: (Int) => Int = (i: Int) => south(i) - 1
 
-    def hasMine(f:(Int,Int)=>Int, i:Int)={
+    val surroundingCells = Seq(north, northEast, east, southEast, south, southWest, west, northWest)
+
+    def hasMine(f: (Int) => Int, i: Int) = {
       try {
-        if (minefield.minefield(f(i, width)) == '*') 1
+        if (minefield.minefield(f(i)) == '*') 1
         else 0
       } catch {
-        case e=>0
+        case e: java.lang.StringIndexOutOfBoundsException => 0
+        case e: Throwable => throw e
       }
     }
 
-    val findMines: Seq[String] =for(cell<-0 to length-1) yield {
-        val currentCell=minefield.minefield(cell).toString
-        if (currentCell=="*" || currentCell== "\n"){
-          currentCell
-        }
-        else {
-          centre.map(hasMine(_,cell)).sum.toString
-        }
-
-    }
-    findMines.mkString
+    (for (cell <- 0 until length) yield {
+      val currentCellContent: String = minefield.minefield(cell).toString
+      if (currentCellContent == "*" || currentCellContent == "\n") {
+        currentCellContent
+      }
+      else {
+        surroundingCells.map(hasMine(_, cell)).sum
+      }
+    }).mkString
   }
+
 }
 
