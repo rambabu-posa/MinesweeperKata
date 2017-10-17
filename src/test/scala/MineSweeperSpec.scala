@@ -260,7 +260,17 @@ class MineSweeperSpec extends WordSpecLike with Matchers {
       "111111*1\n" +
       "11000122\n" +
       "*100001*\n"
-  )
+  ),
+    ("*---\n" +
+     "----\n" +
+     "-*--\n" +
+     "----\n",
+
+     "*100\n" +
+     "2210\n" +
+     "1*10\n" +
+     "1110\n"
+    )
   )
   "Calling Minesweeper" should {
     forAll(singleCell) { (minefield: String, revealledMineField) =>
