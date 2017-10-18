@@ -1,3 +1,5 @@
+import scala.util.{Failure, Success, Try}
+
 /**
   * Created by andrew on 14/10/17.
   */
@@ -27,13 +29,10 @@ object MineSweeper {
 
     val surroundingCells = Seq(north, northEast, east, southEast, south, southWest, west, northWest)
 
-    def hasMine(f: (Int) => Int, cell: Int) = {
-      try {
+    def hasMine(f: (Int) => Int, cell: Int):Try[Int] = {
+      Try {
         if (minefield.minefield(f(cell)) == '*') 1
         else 0
-      } catch {
-        case e: java.lang.StringIndexOutOfBoundsException => 0
-        case e: Throwable => throw e
       }
     }
 
@@ -43,10 +42,12 @@ object MineSweeper {
         currentCellContent
       }
       else {
-        surroundingCells.map(hasMine(_, cell)).sum
+        surroundingCells.map(hasMine(_, cell) match {
+          case Success(i) => i
+          case Failure(e) => 0
+        }).sum
       }
     }).mkString
   }
-
 }
 
