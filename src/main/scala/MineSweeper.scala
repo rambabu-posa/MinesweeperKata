@@ -14,16 +14,16 @@ object MineSweeper {
     val width = minefield.width
     val length = minefield.length
 
-    val north: (Int) => Int = (i: Int) => i - width
-    val south: (Int) => Int = (i: Int) => i + width
+    val north: (Int) => Int = (cellPosition: Int) => cellPosition - width
+    val south: (Int) => Int = (cellPosition: Int) => cellPosition + width
 
-    val east: (Int) => Int = (i: Int) => i + 1
-    val west: (Int) => Int = (i: Int) => i - 1
+    val east: (Int) => Int = (cellPosition: Int) => cellPosition + 1
+    val west: (Int) => Int = (cellPosition: Int) => cellPosition - 1
 
-    val northEast: (Int) => Int = (i: Int) => north(i) + 1
-    val northWest: (Int) => Int = (i: Int) => north(i) - 1
-    val southEast: (Int) => Int = (i: Int) => south(i) + 1
-    val southWest: (Int) => Int = (i: Int) => south(i) - 1
+    val northEast: (Int) => Int = (cellPosition: Int) => north(cellPosition) + 1
+    val northWest: (Int) => Int = (cellPosition: Int) => north(cellPosition) - 1
+    val southEast: (Int) => Int = (cellPosition: Int) => south(cellPosition) + 1
+    val southWest: (Int) => Int = (cellPosition: Int) => south(cellPosition) - 1
 
     val surroundingCells = Seq(north, northEast, east, southEast, south, southWest, west, northWest)
 
