@@ -6,7 +6,7 @@ import scala.util.{Failure, Success, Try}
 
 case class Minefield(minefield:String) {
   val fieldWidth=minefield.indexOf("\n")+1
-  val length=minefield.length
+  val lastCell=minefield.length
 }
 
 object MineSweeper {
@@ -14,7 +14,7 @@ object MineSweeper {
   def revealMines(minefield:Minefield): String = {
 
     val fieldWidth = minefield.fieldWidth
-    val lastCell = minefield.length
+    val lastCell = minefield.lastCell
 
     val north: (Int) => Int = (cellPosition: Int) => cellPosition - fieldWidth
     val south: (Int) => Int = (cellPosition: Int) => cellPosition + fieldWidth
