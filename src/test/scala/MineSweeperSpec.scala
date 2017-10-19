@@ -276,6 +276,8 @@ class MineSweeperSpec extends WordSpecLike with Matchers {
     forAll(singleCell) { (minefield: String, revealledMineField) =>
       s"return $revealledMineField where minefield is $minefield" in {
         val result = MineSweeper.revealMines(Minefield(minefield))
+        println(minefield + "\n SHOULD BE \n\n" + revealledMineField )
+        println("____________________________________________________ \n")
         result shouldBe revealledMineField
       }
     }
