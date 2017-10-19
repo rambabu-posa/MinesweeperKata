@@ -5,7 +5,7 @@ import scala.util.{Failure, Success, Try}
   */
 
 case class Minefield(minefield:String) {
-  val width=minefield.indexOf("\n")+1
+  val fieldWidth=minefield.indexOf("\n")+1
   val length=minefield.length
 }
 
@@ -13,11 +13,11 @@ object MineSweeper {
 
   def revealMines(minefield:Minefield): String = {
 
-    val width = minefield.width
-    val length = minefield.length
+    val fieldWidth = minefield.fieldWidth
+    val lastCell = minefield.length
 
-    val north: (Int) => Int = (cellPosition: Int) => cellPosition - width
-    val south: (Int) => Int = (cellPosition: Int) => cellPosition + width
+    val north: (Int) => Int = (cellPosition: Int) => cellPosition - fieldWidth
+    val south: (Int) => Int = (cellPosition: Int) => cellPosition + fieldWidth
 
     val east: (Int) => Int = (cellPosition: Int) => cellPosition + 1
     val west: (Int) => Int = (cellPosition: Int) => cellPosition - 1
@@ -36,7 +36,7 @@ object MineSweeper {
       }
     }
 
-    (for (cell <- 0 until length) yield {
+    (for (cell <- 0 until lastCell) yield {
       val currentCellContent: String = minefield.minefield(cell).toString
       if (currentCellContent == "*" || currentCellContent == "\n") {
         currentCellContent
