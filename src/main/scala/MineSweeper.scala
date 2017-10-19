@@ -36,7 +36,7 @@ object MineSweeper {
       }
     }
 
-    (for (cell <- 0 until lastCell) yield {
+   (for (cell <- 0 until lastCell) yield {
       val currentCellContent: String = minefield.minefield(cell).toString
       if (currentCellContent == "*" || currentCellContent == "\n") {
         currentCellContent
@@ -45,7 +45,7 @@ object MineSweeper {
         surroundingCells.map(hasMine(_, cell) match {
           case Success(i) => i
           case Failure(e) => 0
-        }).sum
+        }).sum.toString
       }
     }).mkString
   }
